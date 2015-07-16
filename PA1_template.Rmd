@@ -4,22 +4,95 @@ output:
   html_document:
     keep_md: true
 ---
-
+```{r echo=FALSE}
+options(scipen=1,digits=12)
+```
 
 ## Loading and preprocessing the data
 
-
+```{r load data}
+#load data and necessary libraries
+library(dplyr)
+library(ggplot2)
+AcData <- read.csv("activity.csv", na.strings="NA")
+```
 
 ## What is mean total number of steps taken per day?
 
+```{r Total Steps}
+#total number of steps per day:
+T_steps <- aggregate(steps ~ date, data=AcData, FUN=sum) 
+#histrogram of total number of steps per day:
+hist(T_steps$steps,  xlab="Total number of steps taken per day", main="", breaks=10)
+#output summary
+summary(T_steps$steps)
+```
 
+The mean of the total number of steps per day is : `r mean(T_steps$steps)`
+
+The median of the total number of steps per day is : `r median(T_steps$steps)`
 
 ## What is the average daily activity pattern?
 
+```{r Daily Activity Pattern}
+#calculate the mean number of steps taken per interval
+step_int <- aggregate(steps ~ interval, data=AcData, FUN=mean)
+#time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+qplot(step_int$interval,step_int$steps, geom="path",xlab="Interval",ylab="Avg number of steps")
+summary(step_int$steps)
+```
 
+The 5-minute interval containing the maximum number of steps, averaged across all days in the data set is: `r step_int$interval[which.max(step_int$steps)]`. The maximun number of averaged steps is: `r max(step_int$steps)`.
 
 ## Imputing missing values
 
+```{r}
+MV <- sum(is.na(AcData$steps))
+```
+
+The number of missing values is: `r MV`.
+
+We replace all the missing values with the mean for that 5-minute interval:
+
+```{r Missing Values}
+head(AcData)
+intmeans <- rep(step_int$steps, 61)
+#create a new data set with missing values filled in:
+AcData_new <- mutate(AcData, steps = replace(AcData$steps, is.na(AcData$steps),intmeans[is.na(AcData$steps)]))
+head(AcData_new)
+
+#total number of steps per day in new data set:
+T_steps_new <- aggregate(steps ~ date, data=AcData_new, FUN=sum) 
+#histrogram of total number of steps per day:
+hist(T_steps_new$steps,  xlab="Total number of steps taken per day", main="", breaks=10)
+#output summary
+summary(T_steps_new$steps)
+```
+
+The mean of the total number of steps per day is : `r mean(T_steps_new$steps)`
+
+The median of the total number of steps per day is : `r median(T_steps_new$steps)`
+
+Imputing missing values using the approach described above does not change the mean values, however it does slightly alter the median value by: `r ((median(T_steps_new$steps) - median(T_steps$steps))/median(T_steps$steps))*100` %.
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```{r Days of the Week}
+#modify date format in data set with filled-in missing values
+AcData_new$date <- as.character(AcData_new$date)
+AcData_new$date <- as.Date(AcData_new$date)
+#add new variable for weekday name:
+AcData_new <- mutate(AcData_new, weekday=weekdays(AcData_new$date, abbreviate=FALSE))
+#create factor variable: day, indicating weekend or weekday
+AcData_new$day <- ifelse(AcData_new$weekday %in% c("Saturday", "Sunday"), "weekend", "weekday")
+AcData_new$day <- as.factor(AcData_new$day)
+str(AcData_new)
+
+#calculate mean steps per int: weekday & weekend
+step_int_weekday <- aggregate(steps ~ interval + day, data=AcData_new, FUN=mean) 
+#plot:
+g <- ggplot(step_int_weekday, aes(interval,steps))
+g + geom_line() + facet_grid(day ~ ., as.table=FALSE)
+```
+
