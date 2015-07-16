@@ -33,7 +33,7 @@ AcData <- read.csv("activity.csv", na.strings="NA")
 ```r
 #total number of steps per day:
 T_steps <- aggregate(steps ~ date, data=AcData, FUN=sum) 
-#histrogram of total number of steps per day:
+#histogram of total number of steps per day:
 hist(T_steps$steps,  xlab="Total number of steps taken per day", main="", breaks=10)
 ```
 
@@ -76,7 +76,7 @@ summary(step_int$steps)
 ## 206.16981100
 ```
 
-The 5-minute interval containing the maximum number of steps, averaged across all days in the data set is: 835. The maximun number of averaged steps is: 206.169811320755.
+The 5-minute interval containing the maximum number of steps, averaged across all days in the data set is: 835. The maximum number of averaged steps is: 206.169811320755.
 
 ## Imputing missing values
 
@@ -124,7 +124,7 @@ head(AcData_new)
 ```r
 #total number of steps per day in new data set:
 T_steps_new <- aggregate(steps ~ date, data=AcData_new, FUN=sum) 
-#histrogram of total number of steps per day:
+#histogram of total number of steps per day:
 hist(T_steps_new$steps,  xlab="Total number of steps taken per day", main="", breaks=10)
 ```
 

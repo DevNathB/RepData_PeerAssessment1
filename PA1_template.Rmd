@@ -22,7 +22,7 @@ AcData <- read.csv("activity.csv", na.strings="NA")
 ```{r Total Steps}
 #total number of steps per day:
 T_steps <- aggregate(steps ~ date, data=AcData, FUN=sum) 
-#histrogram of total number of steps per day:
+#histogram of total number of steps per day:
 hist(T_steps$steps,  xlab="Total number of steps taken per day", main="", breaks=10)
 #output summary
 summary(T_steps$steps)
@@ -42,7 +42,7 @@ qplot(step_int$interval,step_int$steps, geom="path",xlab="Interval",ylab="Avg nu
 summary(step_int$steps)
 ```
 
-The 5-minute interval containing the maximum number of steps, averaged across all days in the data set is: `r step_int$interval[which.max(step_int$steps)]`. The maximun number of averaged steps is: `r max(step_int$steps)`.
+The 5-minute interval containing the maximum number of steps, averaged across all days in the data set is: `r step_int$interval[which.max(step_int$steps)]`. The maximum number of averaged steps is: `r max(step_int$steps)`.
 
 ## Imputing missing values
 
@@ -63,7 +63,7 @@ head(AcData_new)
 
 #total number of steps per day in new data set:
 T_steps_new <- aggregate(steps ~ date, data=AcData_new, FUN=sum) 
-#histrogram of total number of steps per day:
+#histogram of total number of steps per day:
 hist(T_steps_new$steps,  xlab="Total number of steps taken per day", main="", breaks=10)
 #output summary
 summary(T_steps_new$steps)
